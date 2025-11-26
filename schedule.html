@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление сроками заказов</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-calendar-alt"></i> Управление сроками заказов</h1>
+                <div class="header-actions">
+                    <a href="/funnel" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> К воронке
+                    </a>
+                    <button id="logoutBtn" class="btn btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Статистика сроков -->
+        <div class="stats-container">
+            <div class="stats-card">
+                <h3><i class="fas fa-chart-line"></i> Статистика производства</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Заказов в работе:</span>
+                        <span class="stat-value" id="totalInProgress">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">С просрочкой:</span>
+                        <span class="stat-value warning" id="overdueCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Сегодня срок:</span>
+                        <span class="stat-value info" id="dueTodayCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">В срок:</span>
+                        <span class="stat-value success" id="onTimeCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filters-card card">
+            <h3><i class="fas fa-filter"></i> Фильтры</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Статус этапа:</label>
+                    <select id="stageStatusFilter" class="form-select">
+                        <option value="">Все этапы</option>
+                        <option value="overdue">Просроченные</option>
+                        <option value="today">Сегодня срок</option>
+                        <option value="upcoming">Предстоящие</option>
+                        <option value="completed">Завершенные</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Этап:</label>
+                    <select id="stageFilter" class="form-select">
+                        <option value="">Все этапы</option>
+                        <option value="materialPurchase">Закупка материала</option>
+                        <option value="cutting">Напил</option>
+                        <option value="edging">Кромление</option>
+                        <option value="processing">Обработка</option>
+                        <option value="assembly">Сборка</option>
+                        <option value="delivery">Доставка</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button id="resetFilters" class="btn btn-outline">
+                        <i class="fas fa-redo"></i> Сбросить фильтры
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список заказов в работе -->
+        <div class="orders-list card">
+            <h2><i class="fas fa-tools"></i> Заказы в работе</h2>
+            <div id="ordersContainer" class="schedule-grid"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования сроков -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content large">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-calendar-plus"></i> Управление сроками заказа</h2>
+            
+            <div class="order-info-card">
+                <h3 id="modalOrderTitle">Заказ #</h3>
+                <div class="order-meta-info">
+                    <div class="customer-info-mini">
+                        <span><i class="fas fa-user"></i> <span id="modalCustomerName"></span></span>
+                        <span><i class="fas fa-phone"></i> <span id="modalCustomerPhone"></span></span>
+                        <span><i class="fas fa-map-marker-alt"></i> <span id="modalCustomerAddress"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="scheduleForm">
+                <input type="hidden" id="scheduleOrderId">
+                
+                <div class="schedule-stages">
+                    <!-- Этапы будут добавляться динамически -->
+                </div>
+
+                <div class="schedule-summary">
+                    <h3><i class="fas fa-chart-bar"></i> Сводка по срокам</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span>Начало работ:</span>
+                            <span id="summaryStartDate">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Конец работ:</span>
+                            <span id="summaryEndDate">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Общая длительность:</span>
+                            <span id="summaryDuration">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Текущий статус:</span>
+                            <span id="summaryStatus">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    <i class="fas fa-save"></i> Сохранить сроки
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="script.js"></script>
+    <script src="schedule.js"></script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Воронка заказов</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+<div class="header-actions">
+    <a href="/schedule" class="btn btn-primary">
+        <i class="fas fa-calendar-alt"></i> Управление сроками
+    </a>
+    <button id="logoutBtn" class="btn btn-secondary">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+    </button>
+</div>
+        </header>
+
+        <!-- Форма добавления заказа -->
+        <div class="order-form card">
+            <h2><i class="fas fa-plus-circle"></i> Добавить новый заказ</h2>
+            <form id="addOrderForm" enctype="multipart/form-data">
+                <!-- Информация о клиенте -->
+                <div class="customer-info">
+                    <h3><i class="fas fa-user"></i> Информация о клиенте</h3>
+                    <div class="customer-fields">
+                        <div class="form-group">
+                            <label><i class="fas fa-user-tag"></i> Ф.И.О.:</label>
+                            <input type="text" name="fullName" placeholder="Иванов Иван Иванович" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Номер телефона:</label>
+                            <input type="tel" name="phone" placeholder="+7 (999) 999-99-99" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Адрес заказа:</label>
+                            <input type="text" name="address" placeholder="г. Москва, ул. Примерная, д. 1" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Источник заказа -->
+                <div class="form-group">
+                    <label><i class="fas fa-compass"></i> Откуда пришел клиент:</label>
+                    <select name="source" class="form-select" required>
+                        <option value="">Выберите источник</option>
+                        <option value="Реклама">Реклама</option>
+                        <option value="2ГИС">2ГИС</option>
+                        <option value="Авито">Авито</option>
+                        <option value="Сарафанка">Сарафанка</option>
+                        <option value="Сайт">Сайт</option>
+                        <option value="Рекомендация">Рекомендация</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                </div>
+
+                <!-- Статус заказа -->
+                <div class="form-group">
+                    <label><i class="fas fa-tasks"></i> Статус заказа:</label>
+                    <select name="status" class="form-select" required>
+                        <option value="Согласование">Согласование</option>
+                        <option value="В работе">В работе</option>
+                        <option value="Выполнено">Выполнено</option>
+                        <option value="Отказано">Отказано</option>
+                    </select>
+                </div>
+
+                <!-- Основные стоимости -->
+                <div class="costs-section">
+                    <h3><i class="fas fa-money-bill-wave"></i> Финансовая информация</h3>
+                    <div class="cost-inputs">
+                        <div class="cost-item">
+                            <label><i class="fas fa-shopping-cart"></i> Стоимость заказа:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" name="orderCost" placeholder="0.00" required>
+                                <button type="button" class="btn-plus" data-field="orderCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-hammer"></i> Стоимость материалов:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" name="materialCost" placeholder="0.00">
+                                <button type="button" class="btn-plus" data-field="materialCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-cogs"></i> Стоимость фурнитуры:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" name="furnitureCost" placeholder="0.00">
+                                <button type="button" class="btn-plus" data-field="furnitureCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-taxi"></i> Стоимость такси:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" name="taxiCost" placeholder="0.00">
+                                <button type="button" class="btn-plus" data-field="taxiCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-truck"></i> Стоимость доставки:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" name="deliveryCost" placeholder="0.00">
+                                <button type="button" class="btn-plus" data-field="deliveryCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Иные расходы -->
+                <div class="other-expenses">
+                    <h3><i class="fas fa-receipt"></i> Иные расходы</h3>
+                    <div id="otherExpensesContainer">
+                        <!-- Динамически добавляемые расходы -->
+                    </div>
+                    <button type="button" id="addExpenseBtn" class="btn btn-outline">
+                        <i class="fas fa-plus"></i> Добавить расход
+                    </button>
+                </div>
+                
+                <div class="file-upload">
+                    <label><i class="fas fa-paperclip"></i> Прикрепить файлы:</label>
+                    <input type="file" id="files" name="files" multiple>
+                    <div class="file-hint">Можно выбрать несколько файлов</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    <i class="fas fa-save"></i> Добавить заказ
+                </button>
+            </form>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-container">
+            <div class="stats-card">
+                <h3><i class="fas fa-chart-line"></i> Общая статистика</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Всего заказов:</span>
+                        <span class="stat-value" id="totalOrders">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Общий доход:</span>
+                        <span class="stat-value" id="totalRevenue">0 ₽</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Общие расходы:</span>
+                        <span class="stat-value" id="totalExpenses">0 ₽</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Общая прибыль:</span>
+                        <span class="stat-value profit" id="totalProfit">0 ₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filters-card card">
+            <h3><i class="fas fa-filter"></i> Фильтры</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Статус:</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="">Все статусы</option>
+                        <option value="Согласование">Согласование</option>
+                        <option value="В работе">В работе</option>
+                        <option value="Выполнено">Выполнено</option>
+                        <option value="Отказано">Отказано</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Источник:</label>
+                    <select id="sourceFilter" class="form-select">
+                        <option value="">Все источники</option>
+                        <option value="Реклама">Реклама</option>
+                        <option value="2ГИС">2ГИС</option>
+                        <option value="Авито">Авито</option>
+                        <option value="Сарафанка">Сарафанка</option>
+                        <option value="Сайт">Сайт</option>
+                        <option value="Рекомендация">Рекомендация</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button id="resetFilters" class="btn btn-outline">
+                        <i class="fas fa-redo"></i> Сбросить фильтры
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список заказов -->
+        <div class="orders-list card">
+            <h2><i class="fas fa-list"></i> Список заказов</h2>
+            <div id="ordersContainer" class="orders-grid"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для редактирования -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-edit"></i> Редактировать заказ</h2>
+            <form id="editOrderForm" enctype="multipart/form-data">
+                <input type="hidden" id="editOrderId">
+                
+                <!-- Информация о клиенте -->
+                <div class="customer-info">
+                    <h3><i class="fas fa-user"></i> Информация о клиенте</h3>
+                    <div class="customer-fields">
+                        <div class="form-group">
+                            <label><i class="fas fa-user-tag"></i> Ф.И.О.:</label>
+                            <input type="text" id="editFullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Номер телефона:</label>
+                            <input type="tel" id="editPhone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Адрес заказа:</label>
+                            <input type="text" id="editAddress" name="address" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Источник заказа -->
+                <div class="form-group">
+                    <label><i class="fas fa-compass"></i> Откуда пришел клиент:</label>
+                    <select id="editSource" name="source" class="form-select" required>
+                        <option value="Реклама">Реклама</option>
+                        <option value="2ГИС">2ГИС</option>
+                        <option value="Авито">Авито</option>
+                        <option value="Сарафанка">Сарафанка</option>
+                        <option value="Сайт">Сайт</option>
+                        <option value="Рекомендация">Рекомендация</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                </div>
+
+                <!-- Статус заказа -->
+                <div class="form-group">
+                    <label><i class="fas fa-tasks"></i> Статус заказа:</label>
+                    <select id="editStatus" name="status" class="form-select" required>
+                        <option value="Согласование">Согласование</option>
+                        <option value="В работе">В работе</option>
+                        <option value="Выполнено">Выполнено</option>
+                        <option value="Отказано">Отказано</option>
+                    </select>
+                </div>
+
+                <!-- Основные стоимости -->
+                <div class="costs-section">
+                    <h3><i class="fas fa-money-bill-wave"></i> Финансовая информация</h3>
+                    <div class="cost-inputs">
+                        <div class="cost-item">
+                            <label><i class="fas fa-shopping-cart"></i> Стоимость заказа:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" id="editOrderCost" name="orderCost" required>
+                                <button type="button" class="btn-plus" data-field="editOrderCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-hammer"></i> Стоимость материалов:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" id="editMaterialCost" name="materialCost">
+                                <button type="button" class="btn-plus" data-field="editMaterialCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-cogs"></i> Стоимость фурнитуры:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" id="editFurnitureCost" name="furnitureCost">
+                                <button type="button" class="btn-plus" data-field="editFurnitureCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-taxi"></i> Стоимость такси:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" id="editTaxiCost" name="taxiCost">
+                                <button type="button" class="btn-plus" data-field="editTaxiCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label><i class="fas fa-truck"></i> Стоимость доставки:</label>
+                            <div class="input-group">
+                                <input type="number" step="0.01" id="editDeliveryCost" name="deliveryCost">
+                                <button type="button" class="btn-plus" data-field="editDeliveryCost">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Иные расходы в модальном окне -->
+                <div class="other-expenses">
+                    <h3><i class="fas fa-receipt"></i> Иные расходы</h3>
+                    <div id="editOtherExpensesContainer"></div>
+                    <button type="button" id="editAddExpenseBtn" class="btn btn-outline">
+                        <i class="fas fa-plus"></i> Добавить расход
+                    </button>
+                </div>
+                
+                <div class="file-upload">
+                    <label><i class="fas fa-paperclip"></i> Добавить файлы:</label>
+                    <input type="file" id="editFiles" name="files" multiple>
+                </div>
+
+                <div class="existing-files" id="existingFiles"></div>
+
+                <button type="submit" class="btn btn-primary btn-large">
+                    <i class="fas fa-save"></i> Сохранить изменения
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
